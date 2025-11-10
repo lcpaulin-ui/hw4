@@ -14,5 +14,26 @@ bool equalPaths(Node * root)
 {
     // Add your code below
 
+    // base case 
+    if (root == NULL){
+        return true; 
+    }
+
+    // recursive case
+
+    if ( root ){
+        if (root->left && root->right) {
+        // still have children, keep recursing 
+        return equalPaths(root->left) && equalPaths(root->right); 
+        }
+
+        else if (root->left == NULL && root->right == NULL ) {
+            return true;
+        }
+
+        else {
+            return false; 
+        }
+    }
 }
 
