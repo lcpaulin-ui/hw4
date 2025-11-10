@@ -54,7 +54,7 @@ bool equalPaths(Node * root)
     }
 
     int ref = depth(root); 
-    return same_path(root, ref, 0); 
+    return same_path(root, ref, 1); 
 
     // recursive case
 
