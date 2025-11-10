@@ -15,7 +15,7 @@ int depth (Node* root){
         return 0;
     }
 
-    if (root->right == NULL && root->right == NULL){
+    if (root->left == NULL && root->right == NULL){
         // found leaf node 
         return 1; 
     }
@@ -27,6 +27,8 @@ int depth (Node* root){
     else if (root->right){
         return 1 + depth(root->right);
     }
+
+    return 1;
 }
 
 bool same_path(Node* root, int ref, int curr) {
@@ -38,7 +40,7 @@ bool same_path(Node* root, int ref, int curr) {
         if (ref != curr){
             return false; 
         }
-        return true; 
+        return (ref == curr + 1); 
     }
 
     return same_path(root->left, ref, curr +1 ) && same_path(root->right, ref, curr + 1); 
@@ -55,7 +57,7 @@ bool equalPaths(Node * root)
     }
 
     int ref = depth(root); 
-    return same_path(root); 
+    return same_path(root, ref, 0); 
 
     // recursive case
 
