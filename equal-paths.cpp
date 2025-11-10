@@ -37,7 +37,7 @@ bool same_path(Node* root, int ref, int curr) {
     }
 
     if (root->left == NULL && root->right == NULL){
-        return (ref == curr + 1); 
+        return (ref == curr); 
     }
 
     return same_path(root->left, ref, curr +1 ) && same_path(root->right, ref, curr + 1); 
