@@ -9,6 +9,41 @@ using namespace std;
 
 // You may add any prototypes of helper functions here
 
+// idea: use a helper function to determine the depth of any leaf
+int depth (Node* root){
+    if (root == NULL){
+        return 0;
+    }
+
+    if (root->right == NULL && root->right == NULL){
+        // found leaf node 
+        return 1; 
+    }
+
+    if (root->left){
+        return 1 + depth(root->left);
+    }
+
+    else if (root->right){
+        return 1 + depth(root->right);
+    }
+}
+
+bool same_path(Node* root, int ref, int curr) {
+    if (root == NULL){
+        return true; 
+    }
+
+    if (root->left == NULL && root->right == NULL){
+        if (ref != curr){
+            return false; 
+        }
+        return true; 
+    }
+
+    return same_path(root->left, ref, curr +1 ) && same_path(root->right, ref, curr + 1); 
+}
+
 
 bool equalPaths(Node * root)
 {
@@ -19,21 +54,11 @@ bool equalPaths(Node * root)
         return true; 
     }
 
+    int ref = depth(root); 
+    return same_path(root); 
+
     // recursive case
 
-    if ( root ){
-        if (root->left && root->right) {
-        // still have children, keep recursing 
-        return equalPaths(root->left) && equalPaths(root->right); 
-        }
 
-        else if (root->left == NULL && root->right == NULL ) {
-            return true;
-        }
-
-        else {
-            return false; 
-        }
-    }
 }
 
