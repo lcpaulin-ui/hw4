@@ -26,23 +26,59 @@ int main(int argc, char *argv[])
     cout << "Erasing b" << endl;
     bt.remove('b');
 
-    // AVL Tree Tests
-    AVLTree<char,int> at;
-    at.insert(std::make_pair('a',1));
-    at.insert(std::make_pair('b',2));
+    // tests made by me: 
 
-    cout << "\nAVLTree contents:" << endl;
-    for(AVLTree<char,int>::iterator it = at.begin(); it != at.end(); ++it) {
+    BinarySearchTree<int,int> bin; 
+    // going to make this binary tree: 
+    //    50 
+    //    ^ 
+    //   10 
+    // ^    ^
+    // 5    20 
+
+    bin.insert(std::make_pair(50,50));
+    bin.print(); 
+    bin.insert(std::make_pair(10, 10));
+    bin.print();
+    bin.insert(std::make_pair(20, 20));
+    bin.print();
+    bin.insert(std::make_pair(5, 5)); 
+
+    // chcking 
+    // cout << "checking 50,10, 20, 5" << endl; 
+   
+
+    cout << "Binary Search Tree contents:" << endl;
+    for(BinarySearchTree<int,int>::iterator it = bin.begin(); it != bin.end(); ++it) {
         cout << it->first << " " << it->second << endl;
     }
-    if(at.find('b') != at.end()) {
-        cout << "Found b" << endl;
-    }
-    else {
-        cout << "Did not find b" << endl;
-    }
-    cout << "Erasing b" << endl;
-    at.remove('b');
+
+    bin.print(); 
+
+
+
+
+
+
+
+
+    // // AVL Tree Tests
+    // AVLTree<char,int> at;
+    // at.insert(std::make_pair('a',1));
+    // at.insert(std::make_pair('b',2));
+
+    // cout << "\nAVLTree contents:" << endl;
+    // for(AVLTree<char,int>::iterator it = at.begin(); it != at.end(); ++it) {
+    //     cout << it->first << " " << it->second << endl;
+    // }
+    // if(at.find('b') != at.end()) {
+    //     cout << "Found b" << endl;
+    // }
+    // else {
+    //     cout << "Did not find b" << endl;
+    // }
+    // cout << "Erasing b" << endl;
+    // at.remove('b');
 
     return 0;
 }

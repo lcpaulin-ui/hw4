@@ -284,9 +284,11 @@ Begin implementations for the BinarySearchTree::iterator class.
 template<class Key, class Value>
 BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value> *ptr)
 {
+    //std::cout << ptr->first << " "; 
     // TODO
-    current_ = ptr; 
-    // put all of the left childs in the stack first 
+    // current_ = ptr; 
+    // put all of the left childs in the stack firs
+
     while (ptr != NULL){
         nodes.push(ptr);
         ptr = ptr->getLeft(); 
@@ -297,6 +299,8 @@ BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value> *ptr)
     else {
         current_ = NULL; 
     }
+
+    //return current_; 
 
 }
 
@@ -372,15 +376,19 @@ BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // I HAVE a stack, nodes, which has all of the left childs
 
-    if (nodes.empty() ){
-        current_ = NULL;
+    // avoid seg faults, if stack is empty, just return null 
+    if (nodes.empty()){
+        current_ = NULL; 
         return *this; 
     }
+    //   if (!nodes.empty())
+    // { current_ = nodes.top(); }
 
     // ppop off mystack 
-    current_ = nodes.top(); 
+    //current_ = nodes.top();
+    Node<Key, Value>* temp = nodes.top();  
     nodes.pop(); 
-    Node<Key, Value>* temp = current_; 
+    // Node<Key, Value>* temp = current_; 
 
         // current node will always be on top of stack 
         
@@ -390,16 +398,26 @@ BinarySearchTree<Key, Value>::iterator::operator++()
             if ( temp->getRight() != NULL ){
                 
                 temp = temp->getRight(); 
-                nodes.push(temp);
+                //nodes.push(temp);
+            
 
                 // if right sub has left children, push all of them 
-                    while (temp->getLeft() != NULL ){
-                        temp = temp->getLeft(); 
+                    while (temp != NULL ){
+                        // temp = temp->getLeft(); 
+                        // nodes.push(temp); 
+
                         nodes.push(temp); 
-                    }
-                    
-                }
-    
+                        temp = temp->getLeft(); 
+                 }
+            }
+
+            // no right subtree so im already on stack, just pop off this one 
+    if (!nodes.empty()){
+        current_ = nodes.top(); 
+    }
+    else {
+        current_ = NULL; 
+    }
     return *this;
 
 }   
@@ -591,7 +609,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
    
     // 1 child case
     // only left child 
-    if (find->getLeft() && find->getRight() == NULL ){
+    if ( (find->getLeft()) && find->getRight() == NULL ){
         // promote left child to parent 
         parent = find->getParent(); 
         curr = find->getLeft(); 
@@ -599,7 +617,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     }
 
      // only RIGHT child 
-     else if (find->getRight() && find->getLeft() == NULL ){
+     else if ( (find->getRight()) && find->getLeft() == NULL ){
         // swap parent and node 
         parent = find->getParent(); 
         curr = find->getRight();  
@@ -611,22 +629,26 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         curr->setParent(NULL);
     }
     else if (found && parent->getLeft() == find){
-        parent->setLeft(curr); 
+        parent->setLeft(curr);
+        curr->setParent(parent);  
     }
     else if (found && parent->getRight() == find){
         parent->setRight(curr); 
+        curr->setParent(parent); 
     }
 
     if ( !found ) { // leaf node 
         // detach 
         Node<Key, Value>* parent = find->getParent(); 
-        if (parent->getLeft() == find ) {parent->setLeft(NULL); }
-        else if (parent->getRight() == find ) {parent->setRight(NULL); }
-        if (find->getParent() == NULL){
-            root_ = NULL; 
-        }
-    }
 
+        if (parent == NULL ) { root_ = NULL; }
+        else if (parent->getLeft() == find ) {parent->setLeft(NULL); }
+        else if (parent->getRight() == find ) {parent->setRight(NULL); }
+       
+    }
+    find->setLeft(NULL);
+    find->setRight(NULL);
+    find->setParent(NULL); 
     delete find;
     return; 
 }
