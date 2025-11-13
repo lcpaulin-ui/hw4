@@ -259,7 +259,7 @@ protected:
    
     // helper function to find where to insert new pair 
     void where_to(const std::pair<const Key, Value> &keyValuepair, Node<Key, Value>*& ptr, Node<Key, Value>* parent);
-    int dfs(Node<Key, Value>* ptr); 
+    int dfs(Node<Key, Value>* ptr) const ; 
     void clear_helper(Node<Key, Value>* current); 
     bool balance_rec(Node<Key, Value>* node) const; 
 
@@ -608,6 +608,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 
     if (found && parent == NULL) { // I'm removing root here {
         root_ = curr; 
+        curr->setParent(NULL);
     }
     else if (found && parent->getLeft() == find){
         parent->setLeft(curr); 
@@ -622,7 +623,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         if (parent->getLeft() == find ) {parent->setLeft(NULL); }
         else if (parent->getRight() == find ) {parent->setRight(NULL); }
         if (find->getParent() == NULL){
-            root_ = find; 
+            root_ = NULL; 
         }
     }
 
@@ -663,13 +664,13 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 
         while (par) {
             // find a right child 
-            if (current == par->getLeft() ){ // i want to walk up the parents as long as i dont have a right child yet 
-                current = par;
-                par = par->getParent(); 
+            if (current == par->getRight() ){ // i want to walk up the parents as long as i dont have a right child yet so stop as soon as i find right 
+                return par; 
             }
+            current = par;
+            par = par->getParent(); // keep going as long as i havent found a right 
         }
-
-        return par;
+        return NULL; 
     }
 
     return NULL; 
@@ -699,7 +700,6 @@ void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
     clear_helper(root_); 
-    delete root_;
     root_ = NULL; 
 
 }
@@ -763,7 +763,7 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) con
 }
 
 template<typename Key, typename Value>
-int BinarySearchTree<Key, Value>::dfs(Node<Key, Value>* ptr) {
+int BinarySearchTree<Key, Value>::dfs(Node<Key, Value>* ptr) const {
 
     if(ptr == NULL){ // leaf node 
         return 0; 
