@@ -576,43 +576,54 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     // if key not in treee, do nothing 
     if (find == NULL){ return; } 
 
-
-    if (find->getParent() == NULL ) // ROOT  
-    {
-        root_ = NULL; 
-    }
-
-    // 1 child case
-    // only left child 
-    else if (find->getLeft() && !find->getRight() ){
-        // promote left child to parent 
-        Node<Key, Value>* parent = find->getParent(); 
-        Node<Key, Value>* curr = find->getLeft(); 
-
-        curr->setParent(parent); 
-    }
-
-     // only RIGHT child 
-     else if (find->getRight() && !find->getLeft()){
-        // swap parent and node 
-        Node<Key, Value>* parent = find->getParent(); 
-        Node<Key, Value>* curr = find->getRight(); 
-
-        curr->setParent(parent);  
-    }
-
-    // 2 children case
-    // swap with predecessor and remove from new loc 
-    else if (find->getLeft() && find->getRight() ){
+     // 2 children case
+    // swap with in order predecessor first to reduce to 1 / 0 child case 
+    if (find->getLeft() && find->getRight() ){ // two children 
         Node<Key, Value>* pred = predecessor(find); 
         nodeSwap(find, pred); 
     }
 
-    else { // leaf node 
+    
+    Node<Key, Value>* parent; 
+    Node<Key, Value>* curr; 
+
+    bool found = false; 
+   
+    // 1 child case
+    // only left child 
+    if (find->getLeft() && find->getRight() == NULL ){
+        // promote left child to parent 
+        parent = find->getParent(); 
+        curr = find->getLeft(); 
+        found = true; 
+    }
+
+     // only RIGHT child 
+     else if (find->getRight() && find->getLeft() == NULL ){
+        // swap parent and node 
+        parent = find->getParent(); 
+        curr = find->getRight();  
+        found = true; 
+    }
+
+    if (found && parent == NULL) { // I'm removing root here {
+        root_ = curr; 
+    }
+    else if (found && parent->getLeft() == find){
+        parent->setLeft(curr); 
+    }
+    else if (found && parent->getRight() == find){
+        parent->setRight(curr); 
+    }
+
+    if ( !found ) { // leaf node 
         // detach 
         Node<Key, Value>* parent = find->getParent(); 
         if (parent->getLeft() == find ) {parent->setLeft(NULL); }
         else if (parent->getRight() == find ) {parent->setRight(NULL); }
+        if (find->getParent() == NULL){
+            root_ = find; 
+        }
     }
 
     delete find;
@@ -627,38 +638,41 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 {
     // TODO
     // IF im dealing with a root node 
-    if (current->getParent() == NULL){
+    if (current == NULL){
         return NULL; 
     }
 
     // if it has left child, pred is right-most node of left subtree
+    // first go left 
     if (current->getLeft()){
         current = current->getLeft(); 
 
         // find right-most node of left subtree
-        while (current){
+        // so just do right as most as possible 
+        while (current->getRight() ){
             current = current->getRight(); 
         }
+        return current; 
     }
 
+ 
     // else walk up to parent, find first node who is right child, its parent is the predecessor 
     else {
         // go to parent 
-        current = current->getParent(); 
+        Node<Key, Value>* par = current->getParent(); 
 
-        while (current) {
+        while (par) {
             // find a right child 
-            if (current->getRight()){
-                current = current->getRight(); // found 
-                break; 
-            }
-            else { 
-                current = current->getParent(); 
+            if (current == par->getLeft() ){ // i want to walk up the parents as long as i dont have a right child yet 
+                current = par;
+                par = par->getParent(); 
             }
         }
+
+        return par;
     }
 
-    return current; 
+    return NULL; 
 }
 
 template<typename Key, typename Value>
