@@ -370,32 +370,44 @@ BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // I HAVE a stack, nodes, which has all of the left childs
 
+    if (nodes.empty() ){
+        current_ = NULL;
+        return *this; 
+    }
+
+    // ppop off mystack 
+    current_ = nodes.top(); 
+    nodes.pop(); 
+    Node<Key, Value>* temp = current_; 
+
+
     if (!nodes.empty()){
         // current node will always be on top of stack 
-        current_ = nodes.top(); 
-        nodes.pop(); 
-        Node<Key, Value>* temp = current_; 
+        
         // now add nodes that owuld go next (right subtree ) if necessary 
         while (temp != NULL ){
+
             // if its a parent, push right once 
-            if ( temp->getRight() ){
+            if ( temp->getRight() != NULL ){
+                
                 temp = temp->getRight(); 
                 nodes.push(temp);
 
                 // if right sub has left children, push all of them 
-                    while (temp->getLeft()){
+                    while (temp->getLeft() != NULL ){
                         temp = temp->getLeft(); 
                         nodes.push(temp); 
                     }
-    
-                }    
-
-            // leaf node 
-            else { break; }
+                    break; 
+            }
+        else { 
+            break; 
         }
-
     }
-}
+    return *this;
+    }
+
+}   
 
 
 /*
@@ -691,6 +703,15 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::getSmallestNode() const
 {
     // TODO
+    Node<Key, Value>* curr_ptr = root_; 
+    if (curr_ptr == NULL ){
+        return NULL; 
+    }
+
+    while (curr_ptr->getLeft() ){
+        curr_ptr = curr_ptr->getLeft(); 
+    }
+    return curr_ptr; 
 }
 
 /** helper function added by me 
