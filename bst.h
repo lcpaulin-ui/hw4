@@ -261,6 +261,8 @@ protected:
     void where_to(const std::pair<const Key, Value> &keyValuepair, Node<Key, Value>*& ptr, Node<Key, Value>* parent);
     int dfs(Node<Key, Value>* ptr); 
     void clear_helper(Node<Key, Value>* current); 
+    bool balance_rec(Node<Key, Value>* node) const; 
+
 
 
 
@@ -380,12 +382,9 @@ BinarySearchTree<Key, Value>::iterator::operator++()
     nodes.pop(); 
     Node<Key, Value>* temp = current_; 
 
-
-    if (!nodes.empty()){
         // current node will always be on top of stack 
         
         // now add nodes that owuld go next (right subtree ) if necessary 
-        while (temp != NULL ){
 
             // if its a parent, push right once 
             if ( temp->getRight() != NULL ){
@@ -398,14 +397,10 @@ BinarySearchTree<Key, Value>::iterator::operator++()
                         temp = temp->getLeft(); 
                         nodes.push(temp); 
                     }
-                    break; 
-            }
-        else { 
-            break; 
-        }
-    }
+                    
+                }
+    
     return *this;
-    }
 
 }   
 
@@ -761,10 +756,23 @@ int BinarySearchTree<Key, Value>::dfs(Node<Key, Value>* ptr) {
     }
 
     else {
-        int left = 1 + dfs(ptr->getLeft() );
-        int right = 1+ dfs(ptr->getRight() ); 
-        return std::max(left, right); 
+        int left = dfs(ptr->getLeft() );
+        int right = dfs(ptr->getRight() ); 
+        return 1 + std::max(left, right); 
     }
+}
+
+template<typename Key, typename Value>
+bool BinarySearchTree<Key, Value>::balance_rec(Node<Key, Value>* node) const {
+    if (node == NULL){ return true; }
+
+    else {
+        int left_h = dfs(node->getLeft()); 
+        int right_h = dfs(node->getRight()); 
+        bool balance =  std::abs(left_h - right_h) <= 1; 
+        return balance && balance_rec(node->getLeft()) && balance_rec(node->getRight()); 
+    }
+
 }
 
 /**
@@ -775,16 +783,13 @@ bool BinarySearchTree<Key, Value>::isBalanced() const
 {
     // TODO
 
-    // recursively check if it is balanced 
+    // recursively check if it is balanced use helper because
+    // i want to use the node as an input argument 
 
-    if (root_ == NULL){
-        return true; 
-        // all roots are balanced (height one)
-    }
-    else {
-        bool balance =  std::abs( dfs(root_->getRight() ) - dfs( root_->getRight() )) <= 1; 
-        return balance && isBalanced(root_->getLeft()) && isBalanced(root_->getRight()); 
-    }
+    // using dfs with my dfs function to find the height of each subtree
+    // using balance_rec function to perform the recursion also 
+    bool balanced = balance_rec(root_); 
+    return balanced; 
     
 }
 
