@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <utility>
 #include <stack>
+#include <algorithm> 
+#include <cmath> 
 
 /**
  * A templated class for a Node in a search tree.
@@ -252,7 +254,7 @@ protected:
 
     // Add helper functions here
 
-    Node <Key, Value>* search(Node<Key,Value>* ptr, const Key& key); 
+    Node <Key, Value>* search(Node<Key,Value>* ptr, const Key& key) const; 
 
    
     // helper function to find where to insert new pair 
@@ -511,19 +513,29 @@ template<class Key, class Value>
 void BinarySearchTree<Key, Value>::where_to(const std::pair<const Key, Value> &keyValuepair, Node<Key, Value>*& ptr, Node<Key, Value>* parent)
 {
     if (ptr == NULL){
-        ptr = new Node(keyValuepair.first, keyValuepair.second, parent); 
+        ptr = new Node<Key, Value>(keyValuepair.first, keyValuepair.second, parent); 
         return; 
     }
 
-    else if (keyValuepair.first < ptr->getKey() )  { where_to(keyValuepair, ptr->getLeft(), ptr);  } 
-    else { where_to(keyValuepair, ptr->getRight(), ptr); }
+    else if (keyValuepair.first < ptr->getKey() )  {
+        Node<Key, Value>* l_ptr = ptr->getLeft(); 
+         where_to(keyValuepair, l_ptr, ptr);  
+         ptr->setLeft(l_ptr); 
+        } 
+
+    else {
+        Node<Key, Value>* r_ptr = ptr->getRight(); 
+        where_to(keyValuepair, r_ptr, ptr);  
+        ptr->setRight(r_ptr); 
+     }
+
 }
 
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
     if (root_ == NULL){
-        root_ = new Node(keyValuePair.first, keyValuePair.second, NULL); 
+        root_ = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, NULL); 
         return; 
     }
     
@@ -534,7 +546,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     }
 
     else {
-        where_to(KeyValuePair, root_, NULL); 
+        where_to(keyValuePair, root_, NULL); 
     }
 }
 
@@ -584,8 +596,8 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     // 2 children case
     // swap with predecessor and remove from new loc 
     else if (find->getLeft() && find->getRight() ){
-        Node<Key, Value>* predecessor = predecessor(find); 
-        nodeSwap(find, predecessor); 
+        Node<Key, Value>* pred = predecessor(find); 
+        nodeSwap(find, pred); 
     }
 
     else { // leaf node 
@@ -628,7 +640,7 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 
         while (current) {
             // find a right child 
-            if (current_->right){
+            if (current->getRight()){
                 current = current->getRight(); // found 
                 break; 
             }
@@ -685,7 +697,7 @@ BinarySearchTree<Key, Value>::getSmallestNode() const
 * returns pointer to the found value, if not found return null 
 */
 template<typename Key, typename Value>
-Node <Key, Value>* BinarySearchTree<Key, Value>::search(Node<Key,Value>* ptr, const Key& key) {
+Node <Key, Value>* BinarySearchTree<Key, Value>::search(Node<Key,Value>* ptr, const Key& key) const {
 
     if (ptr == NULL){
         return NULL; 
@@ -729,7 +741,7 @@ int BinarySearchTree<Key, Value>::dfs(Node<Key, Value>* ptr) {
     else {
         int left = 1 + dfs(ptr->getLeft() );
         int right = 1+ dfs(ptr->getRight() ); 
-        return max(left, right); 
+        return std::max(left, right); 
     }
 }
 
@@ -743,12 +755,12 @@ bool BinarySearchTree<Key, Value>::isBalanced() const
 
     // recursively check if it is balanced 
 
-    if (root == NULL){
+    if (root_ == NULL){
         return true; 
         // all roots are balanced (height one)
     }
     else {
-        bool balance =  abs ( dfs(root_->getRight() ) - dfs( root_->getRight() )) <= 1; 
+        bool balance =  std::abs( dfs(root_->getRight() ) - dfs( root_->getRight() )) <= 1; 
         return balance && isBalanced(root_->getLeft()) && isBalanced(root_->getRight()); 
     }
     
