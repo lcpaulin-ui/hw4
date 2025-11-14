@@ -254,7 +254,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent, AVLNode<Key, Va
             
             // zig zag: child is right child 
             else {
-                if (child == NULL){ return; }
+                //if (child == NULL){ return; }
                 rotateLeft(parent);
                 rotateRight(grandp); 
 
@@ -298,7 +298,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent, AVLNode<Key, Va
                 
                 // zig zag: child is right child 
                 else {
-                    if (child == NULL){ return; }
+                    //if (child == NULL){ return; }
                     rotateRight(parent);
                     rotateLeft(grandp); 
     
@@ -460,11 +460,13 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff){
     if (diff == -1){ // left subtree is taller aka left heavy
         
         child = node->getLeft();
-        if (child == NULL){ return; }
+        
         
         int8_t child_balance = child->getBalance(); 
 
         if (node_balance + diff == -2 ){
+
+            if (child == NULL){ return; }
             
             if (child_balance == -1 ){
                 rotateRight(node); 
@@ -523,11 +525,12 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff){
         
         child = node->getRight(); 
 
-        if (child == NULL){return; }
+        //if (child == NULL){return; }
         int8_t child_balance = child->getBalance(); 
 
         if (node_balance + diff == 2 ){
 
+            if (child == NULL){ return; }
 
             if (child_balance == 1 ){
                 rotateLeft(node); 
