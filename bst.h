@@ -229,7 +229,7 @@ public:
         iterator(Node<Key,Value>* ptr);
         Node<Key, Value> *current_;
 
-        // new data member: stack to iterate through bst 
+        // new data member: stack to iterate through bst and do the inorder traversal logic  
         std::stack< Node<Key,Value>* > nodes; 
     };
 
@@ -259,9 +259,9 @@ protected:
    
     // helper function to find where to insert new pair 
     void where_to(const std::pair<const Key, Value> &keyValuepair, Node<Key, Value>*& ptr, Node<Key, Value>* parent);
-    int dfs(Node<Key, Value>* ptr) const ; 
-    void clear_helper(Node<Key, Value>* current); 
-    bool balance_rec(Node<Key, Value>* node) const; 
+    int dfs(Node<Key, Value>* ptr) const; // helper to do the dfs 
+    void clear_helper(Node<Key, Value>* current); // helper for clear function
+    bool balance_rec(Node<Key, Value>* node) const; // helper to find the balance of a binary search tree 
 
 
 
@@ -288,7 +288,6 @@ BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value> *ptr)
     // TODO
     // current_ = ptr; 
     // put all of the left childs in the stack firs
-
     while (ptr != NULL){
         nodes.push(ptr);
         ptr = ptr->getLeft(); 
@@ -370,16 +369,21 @@ BinarySearchTree<Key, Value>::iterator::operator!=(
 */
 // in order: left, root, right
 
+//  b 
+//  ^
+// a c 
+// in order a b c 
+
 template<class Key, class Value>
 typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // I HAVE a stack, nodes, which has all of the left childs
 
-    // avoid seg faults, if stack is empty, just return null 
+    // avoid seg faults, if stack is empty, just return null (nothing to iterate to)
     if (nodes.empty()){
         current_ = NULL; 
-        return *this; 
+        return *this;  
     }
     //   if (!nodes.empty())
     // { current_ = nodes.top(); }
@@ -402,6 +406,7 @@ BinarySearchTree<Key, Value>::iterator::operator++()
             
 
                 // if right sub has left children, push all of them 
+                // firs titeration pushes the right, all else pushes left 
                     while (temp != NULL ){
                         // temp = temp->getLeft(); 
                         // nodes.push(temp); 
@@ -411,7 +416,7 @@ BinarySearchTree<Key, Value>::iterator::operator++()
                  }
             }
 
-            // no right subtree so im already on stack, just pop off this one 
+    // no right subtree so im already on stack, just pop off this one 
     if (!nodes.empty()){
         current_ = nodes.top(); 
     }
@@ -528,12 +533,9 @@ Value const & BinarySearchTree<Key, Value>::operator[](const Key& key) const
 
 
 
-/**
-* An insert method to insert into a Binary Search Tree.
-* The tree will not remain balanced when inserting.
-* Recall: If key is already in the tree, you should 
-* overwrite the current value with the updated value.
-*/
+// helper function to find where i am going to on the binary tree
+// will look for where to insert the new node 
+// use dfs logic / recursion 
 
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::where_to(const std::pair<const Key, Value> &keyValuepair, Node<Key, Value>*& ptr, Node<Key, Value>* parent)
@@ -543,9 +545,9 @@ void BinarySearchTree<Key, Value>::where_to(const std::pair<const Key, Value> &k
         return; 
     }
 
-    else if (keyValuepair.first < ptr->getKey() )  {
+    else if (keyValuepair.first < ptr->getKey() )  { // traverse left subtree 
         Node<Key, Value>* l_ptr = ptr->getLeft(); 
-         where_to(keyValuepair, l_ptr, ptr);  
+         where_to(keyValuepair, l_ptr, ptr);  // continue recursion 
          ptr->setLeft(l_ptr); 
         } 
 
@@ -566,7 +568,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     }
     
     Node<Key, Value>* find = internalFind(keyValuePair.first); 
-    if (find != NULL){
+    if (find != NULL){ // already on tree 
         find->setValue(keyValuePair.second);
         return;  
     }
