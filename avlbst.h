@@ -637,7 +637,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
     bool found = false;
 
     // 1 child case // only left child 
-    if (to_remove->getLeft() && to_remove->getRight() ){
+    if (to_remove->getLeft() && to_remove->getRight() == NULL ){
         //promote left child to parent 
         parent = to_remove->getParent();
         curr = to_remove->getLeft(); 
