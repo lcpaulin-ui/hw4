@@ -608,7 +608,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
     // go on: find parent 
     //bool found = false; 
 
-    AVLNode<Key, Value>* parent;
+    AVLNode<Key, Value>* parent = to_remove->getParent(); 
     AVLNode<Key, Value>* curr;
     int8_t diff = 0; 
 
