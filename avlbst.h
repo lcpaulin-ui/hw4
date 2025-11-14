@@ -448,7 +448,7 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff){
         if (parent->getLeft() == node){
             next_diff = 1; 
         }
-        else if (parent->getRight() == node){
+        else {
             next_diff = -1; 
         }
     }
@@ -456,13 +456,13 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff){
     AVLNode<Key, Value>* child; 
 
     if (diff == -1){ // left subtree is taller aka left heavy
+        child = node->getLeft();
         
-        child = node->getLeft(); 
+        
         int8_t child_balance = child->getBalance(); 
 
         if (node_balance + diff == -2 ){
-
-
+            
             if (child_balance == -1 ){
                 rotateRight(node); 
                 node->setBalance(0);
