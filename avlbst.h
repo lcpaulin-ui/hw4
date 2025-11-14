@@ -623,11 +623,11 @@ void AVLTree<Key, Value>::remove(const Key& key)
 
         if (to_remove == parent->getLeft()){
             diff = 1; 
-            parent->updateBalance(1); 
+            // parent->updateBalance(1); 
         }
         else if (to_remove == parent->getRight()){
             diff = -1; 
-            parent->updateBalance(-1); 
+            // parent->updateBalance(-1); 
         }
 
     }
